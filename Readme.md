@@ -1,16 +1,16 @@
-#This is a cpp Project with cmake library
+# This is a cpp Project with cmake library
 
 follow the given Steps:
 -
 
--open the project XonixGame dir in terminal.
+- open the project XonixGame dir in terminal.
 
--mkdir build
+- mkdir build
 
--cd build
+- cd build
 
--cmake ..
+- cmake ..
 
--make
+- make
 
--./tetris
+- ./tetris
