@@ -28,13 +28,46 @@ struct Enemy {
         y += dy;
         if (grid[y / ts][x / ts] == 1) { dy = -dy; y += dy; }
     }
+
+    void changePattren() {
+        int pattern = rand() % 6; 
+    
+        switch(pattern) {
+            case 0: 
+                dx = -dx;
+                break;
+            case 1: 
+                dy = -dy;
+                break;
+            case 2: 
+                dx = -dx;
+                dy = -dy;
+                break;
+            case 3: 
+                std::swap(dx, dy);
+                break;
+            case 4: 
+                dx = (rand() % 3 - 1); 
+                dy = (rand() % 3 - 1);
+                break;
+            case 5: 
+                if (dx == 0) dx = 1;
+                if (dy == 0) dy = 1;
+                dx += (dx > 0 ? 1 : -1);
+                dy += (dy > 0 ? 1 : -1);
+                break;
+            default:
+                break;
+        }
+    }
+    
 };
 
 void drop(int y, int x) {
-    if (y < 0 || y >= M || x < 0 || x >= N) return; // ✅ prevent going outside grid
-    if (grid[y][x] != 0) return; // ✅ only process empty area
+    if (y < 0 || y >= M || x < 0 || x >= N) return; 
+    if (grid[y][x] != 0) return; 
 
-    grid[y][x] = -1; // mark as visited
+    grid[y][x] = -1;
     drop(y - 1, x);
     drop(y + 1, x);
     drop(y, x - 1);
@@ -42,9 +75,10 @@ void drop(int y, int x) {
 }
 
 int main() {
+    int frameRate = 50; 
     srand(time(0));
     RenderWindow window(VideoMode(N * ts, M * ts), "Xonix");
-    window.setFramerateLimit(60);
+    window.setFramerateLimit(frameRate);
 
     Texture t1, t2, t3, t4;
     t1.loadFromFile("images/tiles.png");
@@ -83,23 +117,31 @@ int main() {
     Enemy enemies[10];
     int enemyCount = 0;
 
-    float levelUpTimer = 0;
+    float levelUpTimer = 0, pattrenShiftTimer= 0;
 
+    bool allowPattrenShifting = false;
     while (window.isOpen()) {
         float time = clock.restart().asSeconds();
         timer += time;
         levelUpTimer +=time;
+        pattrenShiftTimer += time;
 
 
-        if (20 < levelUpTimer) {
-            for(int i = 0; i < enemyCount; i++){
-                enemies[i].dx > 0 ? enemies[i].dx++ : enemies[i].dx--; 
-                enemies[i].dy > 0 ? enemies[i].dy++ : enemies[i].dy--; 
-            }
-
+        if (5 < levelUpTimer) {
+            frameRate += 10;
+            window.setFramerateLimit(frameRate);
             levelUpTimer = 0;
         }
 
+        if(pattrenShiftTimer > 30){
+            allowPattrenShifting = true;
+            if(allowPattrenShifting && (pattrenShiftTimer > 35)) {
+                pattrenShiftTimer = 30;
+                for(int i = 0; i < enemyCount; i++){
+                    enemies[i].changePattren();
+                }
+            }
+        }
 
 
         Event e;
