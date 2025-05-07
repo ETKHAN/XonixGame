@@ -16,9 +16,9 @@ GameState gameState = MENU;
 int score = 0;
 
 struct Enemy {
-    int x, y, dx, dy;
+    int x = 300, y = 300, dx, dy;
     void reset() {
-        x = y = 300;
+        // x = y = 300;
         dx = 4 - rand() % 8;
         dy = 4 - rand() % 8;
     }
@@ -30,6 +30,7 @@ struct Enemy {
     }
 
     void changePattren() {
+        if(dx == 0 && dy == 0) reset();
         int pattern = rand() % 6; 
     
         switch(pattern) {
@@ -192,7 +193,17 @@ int main() {
                 if (y > M - 1) y = M - 1;
 
                 if (grid[y][x] == 2) Game = false;
-                if (grid[y][x] == 0) { grid[y][x] = 2; score++; }
+                if (grid[y][x] == 0) { 
+                    grid[y][x] = 2; score++; 
+                    if((score % 50 == 0) && score){
+                        for(int i = 0; i < enemyCount ; i++){
+                            enemies[i].dx = 0;
+                            enemies[i].dy = 0;
+                        }
+                        pattrenShiftTimer = 32;
+
+                    }
+                }
                 
                 timer = 0;
             }
